@@ -4,7 +4,14 @@ class Product < ActiveRecord::Base
   validates :price, numericality: { greater_than: 0 }
 
   def tweets
-    twitter.search("#{name} -rt", result_type: 'recent', lang: 'en').take(5)
+    # the cache is a hash
+    # the key is a single parameter to fetch
+    ## this is global, so needs to be unique hence [self, 'tweets']
+    ## can provide an expiration time
+    # and the value is the return value of the block
+    Rails.cache.fetch([self, 'tweets'], expires_in: 5.minutes) do
+      twitter.search("#{name} -rt", result_type: 'recent', lang: 'en').take(5)
+    end
   end
 
   private
