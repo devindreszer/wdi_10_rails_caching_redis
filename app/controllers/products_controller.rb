@@ -8,7 +8,7 @@ class ProductsController < ApplicationController
   end
 
   def show
-    respond_with(@product)
+    respond_with(@product) if stale?(product)
   end
 
   def new
